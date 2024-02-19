@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .vehicle-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .vehicle-table th, .vehicle-table td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        .vehicle-thumbnail {
+            max-width: 80px;
+            max-height: 80px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .delete-button {
+            background-color: #ff6961;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin: 0 auto;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #e2574c;
+        }
+
+        .no-vehicles {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+    <title>Vehicle List</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Vehicle List</h2>
+        
+        {% if vehicles %}
+            <table class="vehicle-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Model</th>
+                        <th>Usage</th>
+                        <th>Application</th>
+                        <th>Fuel Type</th>
+                        <th>Transmission Type</th>
+                        <th>Image</th>
+                        <th>Stock</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                        <tr>
+                            <td>{{ vehicle.name }}</td>
+                            <td>{{ vehicle.description }}</td>
+                            <td>Rs:{{ vehicle.price }}</td>
+                            <td>{{ vehicle.discount }}</td>
+                            <td>{{ vehicle.get_vehicle_model_display }}</td>
+                            <td>{{ vehicle.get_vehicle_usage_display }}</td>
+                            <td>{{ vehicle.get_vehicle_application_display }}</td>
+                            <td>{{ vehicle.get_fuel_type_display }}</td>
+                            <td>{{ vehicle.get_transmission_type_display }}</td>
+                            <td>
+                                {% if vehicle.images.first %}
+                                    <img src="{{ vehicle.images.first.image.url }}" alt="{{ vehicle.name }} Image" class="vehicle-thumbnail">
+                                {% else %}
+                                    No Image
+                                {% endif %}
+                            </td>
+                            <td>{{ vehicle.stock }}</td>
+                            <td>
+                                <button class="delete-button" onclick="deleteVehicle('{{ vehicle.id }}')">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-vehicles">No vehicles available.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function deleteVehicle(vehicleId) {
+            if (confirm("Are you sure you want to delete this vehicle?")) {
+                // Send AJAX request to delete the vehicle
+                fetch(`/delete-vehicle/${vehicleId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}', // Ensure you have CSRF token
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ vehicleId: vehicleId })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove the table row if deletion is successful
+                        document.querySelector(`tr[data-vehicle-id="${vehicleId}"]`).remove();
+                        alert('Vehicle deleted successfully!');
+                    } else {
+                        alert('Failed to delete vehicle.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html>
+
