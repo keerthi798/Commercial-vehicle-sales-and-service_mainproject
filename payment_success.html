@@ -1,3 +1,4 @@
+
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -135,45 +136,6 @@
     background-color: #007bff; /* Change background color for the last item */
     color: #fff; /* Text color for the last item */
 }
-/* Styles for the dropdown */
-.dropdown {
-  position: relative;
-}
-
-.dropdown .dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #fff; /* Change as needed */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Change as needed */
-}
-
-/* Show the dropdown menu when hovering over the parent */
-.nav-item:hover .dropdown-menu {
-  display: block;
-}
-{% comment %} .cart-icon {
-    position: relative;
-    display: inline-block;
-}
-
-.cart-count {
-    
-    top: -8px; 
-    right: -8px; 
-    background-color: red;
-    color: white;
-    border-radius: 10%;
-    width: 5px;
-    height: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3px;
-} {% endcomment %}
-
-
 /* Styles for the cart icon */
 .cart-icon {
   position: relative;
@@ -199,9 +161,11 @@
   padding: 4px 8px; /* Adjust padding as needed */
   font-size: 20px; /* Adjust font size */
 }
-
+/* Show the dropdown menu when hovering over the parent */
+.nav-item:hover .dropdown-menu {
+  display: block;
+}
     </style>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
 <body data-bs-spy="scroll" data-bs-target=".navbar" data-bs-offset="70">
@@ -237,32 +201,19 @@
                 <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#home">Home</a>
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link">vehicles</a>
-                        <div class="dropdown">
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="{% url 'vehicle_order_model' 'lightvehicle' %}">Light Vehicle</a>
-                                <a class="dropdown-item" href="{% url 'vehicle_order_model' 'trucks' %}">Trucks</a>
-                                <a class="dropdown-item" href="{% url 'vehicle_order_model' 'buses' %}">Passenger</a>
-                                
-                                <!-- Add more vehicle models as needed -->
-                            </div>
+                        <a class="nav-link" href="#about">vehicles</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="">Services</a>
-                        <div class="dropdown">
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="{% url 'booking' %}">Service Booking</a>
-                                <a class="dropdown-item" href="">Booking History</a>
-                                <a class="dropdown-item" href="">Insurance</a>
-                                
-                                <!-- Add more vehicle models as needed -->
-                            </div>
-                        </div>
+                        <a class="nav-link" href="{% url 'booking' %}">Services</a>
                     </li>
+                    {% comment %} <li class="nav-item">
+                        <a class="nav-link" href="partsorder.html">Spare parts</a>
+                    </li>  {% endcomment %}
+                    
                     <li class="nav-item">
                         <a class="nav-link">Spare parts</a>
                         <div class="dropdown">
@@ -278,9 +229,8 @@
                             
                         </div>
                     </li>
-                   
 
-                    
+
                     <li class="nav-item" style="display: flex; align-items: center;">
                         <div id="user-dropdown" class="user-profile">
                             {% if request.session.profile_image_updated %}
@@ -293,20 +243,15 @@
                             <strong style="font-weight: bold;">{{ user.username }}</strong>
                             <div id="user-dropdown-content" class="dropdown" style="position: absolute; top: 100%; left: 0; display: none;">
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    
+                                    <a class="dropdown-item" href="">My Profile</a>
                                     <a class="dropdown-item" href="{% url 'edit_profile' %}">Edit Profile</a>
-                                    <a class="dropdown-item" href="{% url 'change_password' %}">change password</a>
-                
-                                    {% comment %} <a class="dropdown-item" href="" >Logout</a> {% endcomment %}
-                                    <a class="dropdown-item" href="{% url 'logout' %}" onclick="showLogoutMessage()">Logout</a>
-
+                                    <a class="dropdown-item" href="{% url 'logout' %}" onclick="confirmLogout()">Logout</a>
                                     {% csrf_token %}
                                 </div>
                             </div>
                         </div>
                     </li>
-
-                    {% comment %} {% if user.is_authenticated %}
+                    {% if user.is_authenticated %}
                     <div class="cart-icon">
                     <a href="{% url 'view_cart' %}" class="view-cart-link">
                     <img src="{% static 'img/cart.png' %}" alt="Cart">
@@ -317,28 +262,18 @@
                      <span class="cart-count">{{ cart_count }}</span>
                     {% endif %}
                 </div>
-                {% endif %} {% endcomment %}
-                    {% comment %} <li class="nav-item">
-                        <a class="nav-link" href="{% url 'view_cart.html' %}">
-                            <i class="fas fa-shopping-cart"></i> <!-- Assuming you're using Font Awesome for icons -->
-                            Cart
-                        </a>
-                    </li>  {% endcomment %}
-                    
-               
+                {% endif %}
                     {% comment %} <li class="nav-item">
                         <a class="btn btn-outline-light ms-3" href="{% url 'logout' %}" onclick="confirmLogout()">Logout</a>
                     </li> {% endcomment %}
                     <script>
-                        {% comment %} function confirmLogout() {
+                        function confirmLogout() {
                             if (confirm("Are you sure you want to log out?")) {
                                 window.location.href = "{% url 'logout' %}";  // Redirect to the logout URL
                             }
-                        } {% endcomment %}
-                        
-                        function showLogoutMessage() {
-                            alert('You have been logged out successfully.');
                         }
+                        
+
                         const userDropdown = document.getElementById("user-dropdown");
                         const userDropdownContent = document.getElementById("user-dropdown-content");
                     
@@ -378,183 +313,62 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Details</title>
-
+    <title>Payment Success</title>
     <style>
         {% comment %} body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
-        } {% endcomment %}
-
-        {% comment %} .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f8f9fa; /* Light background color */
-        } {% endcomment %}
-
-        .vehicle-details-container {
-            display: flex;
-            width: 90%;
-            background-color: #fff; /* White background color */
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 20px;
-            overflow: hidden;
-        }
-
-        .vehicle-details-content {
-            flex: 1;
-            padding: 20px;
-        }
-        .action-buttons {
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-around;
-            padding: 20px;
-        }
+            justify-content: center;
+            height: 100vh;
+        } 
 
-        .action-button {
-            padding: 10px;
-            width: 80%;
+         .container {
             text-align: center;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            background-color: #ffffff; 
+             border-radius: 8px; 
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+             padding: 20px; 
+             max-width: 400px;
+            width: 100%;  
+        }  {% endcomment %}
+
+        h1 {
+            color: #28a745;
         }
 
-        .action-button:hover {
-            background-color: #2980b9;
+        p {
+            margin: 10px 0;
         }
 
-        /* Your existing styles remain unchanged */
-
-        /* New style for the image carousel container */
-        .image-carousel-container {
-            overflow: hidden;
-            position: relative;
-            width: 100%; /* Ensure the container takes up the full width */
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
         }
 
-        /* Style for the image carousel */
-        .image-carousel {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            width: 300%; /* Set the width to accommodate all images */
-        }
-
-        .image-carousel img {
-            width: 40%; /* Ensure images take up the full width of the container */
-            object-fit: cover; /* Maintain aspect ratio while covering the container */
-        }
-
-        /* Style for the navigation buttons */
-        .nav-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            outline: none;
-            color: #3498db;
-        }
-
-        /* Positioning of navigation buttons */
-        .prev {
-            left: 10px;
-        }
-
-        .next {
-            right: 10px;
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="vehicle-details-container">
-            <div class="vehicle-details-content">
-                <!-- Updated Image carousel with new classes -->
-                <div class="image-carousel-container">
-                    <div class="image-carousel" id="image-carousel">
-                        {% for image in vehicle.images.all %}
-                        <img src="{{ image.image.url }}" alt="{{ vehicle.name }} Image">
-                        {% endfor %}
-                    </div>
-                    <button class="nav-button prev" onclick="prevSlide()">❮</button>
-                    <button class="nav-button next" onclick="nextSlide()">❯</button>
-                </div>
-            </div>
-            <div class="vehicle-details-content">
-                <h3>{{ vehicle.name }}</h3>
-                <p>Description: {{ vehicle.description }}</p>
-                <p>Price: Rs {{ vehicle.price }}</p>
-                <p>Fuel Type: {{ vehicle.get_fuel_type_display }}</p>
-                <p>Transmission Type: {{ vehicle.get_transmission_type_display }}</p>
-                <p>Booking Amount: Rs {{ vehicle.booking_amount }}</p>
-                <div class="action-buttons">
-                    <a href="{% url 'book_now' vehicle.id %}" class="action-button">Book Now</a>
-                    {% if vehicle.brochure %}
-                        <a href="{% url 'download_brochure' vehicle.id %}" class="action-button">
-                            Download Brochure
-                        </a>
-                    {% else %}
-                        <button class="action-button" disabled>Download Brochure</button>
-                    {% endif %}
-                </div>
-                
-            </div>
-            
-        </div>
+        </h2>
+            <h2>Dear Customer ,</h2>
+            <p>Your payment for booking has been successfully processed.</p>
+            <p>Thank you for choosing AutoMate Hub!</p>
+        
+        <p><a href="/">Go back to home</a></p>
+        
     </div>
-
-    <!-- Modal and script remain unchanged -->
-
-    <script>
-        // Additional JavaScript for image sliding
-        var currentSlide = 0;
-
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
-
-        function prevSlide() {
-            showSlide(currentSlide - 1);
-        }
-
-        function showSlide(n) {
-            var slides = document.getElementById('image-carousel');
-            var totalSlides = slides.children.length;
-
-            if (n >= totalSlides) {
-                currentSlide = 0;
-            } else if (n < 0) {
-                currentSlide = totalSlides - 1;
-            } else {
-                currentSlide = n;
-            }
-
-            var transformValue = -currentSlide * (100 / totalSlides) + '%';
-            slides.style.transform = 'translateX(' + transformValue + ')';
-        }
-    </script>
 </body>
 
 </html>
-
-
-
-
-
